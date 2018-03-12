@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Sistema de Administración de Cartas</title>
+	<link rel="stylesheet" type="text/css" href="css/form.css">
+	<link rel="icon" href="favicon.png" type="image/x-icon" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+	<script src="js/jquery.min.js"></script>
+</head>
+<body>
+	<header>
+		<h1>
+		  <div class="animated fadeInLeft">AMICUS</div><div class="animated fadeInRight">MARKETING</div>
+		</h1>
+		<p class="animated fadeInUp delay-1">Sistema de Administración de Cartas</p>
+	</header>
+
+	<form method="post" target="_blank" class="animated fadeInUp delay-1">
+		<div class='field'>
+			<input placeholder='FE' type="date" name="FE">
+			<label>Fecha de Expedición</label>
+		</div>
+		<div class='field'>
+			<input placeholder='FV' type='date' name="FV">
+			<label>Fecha de Vigencia</label>
+		</div>
+		<div class='field'>
+			<select class="slctPuesto" name="puestos">
+				
+			</select>
+			<label>Puesto</label>
+		</div>
+		<div class="field">
+			<select class="slctCadenas" name="cadenas">
+			</select>
+			<label>Cadena</label>
+		</div>
+		<div class="field">
+			<select class="slctSucursales" name="sucursales">
+				
+			</select>
+			<label>Sucursal</label>
+			<div class="sucName hide">Sucursal</div>
+		</div>
+		<div class="field">
+			<select class="slctDir" name="direccion">
+				
+			</select>
+			<label>Dirección</label>
+		</div>
+		<div class='field'>
+			<input placeholder='Cliente' type='text' name="cliente">
+			<label>Cliente</label>
+		</div>
+		<div id="txtNP" class='field hide'>
+			<input placeholder='Numero de Provedor' type='text' name="np">
+			<label>Numero de Provedor</label>
+		</div>
+		<div id="txtProd" class='field hide'>
+			<input placeholder='Producto(s)' type='text' name="producto">
+			<label>Producto</label>
+		</div>
+		<div id="txtDep" class='field hide'>
+			<input placeholder='Departamento' type='text' name="departamento">
+			<label>Departamento</label>
+		</div>
+		<div class='field'>
+			<input id="surname" placeholder='Apellidos' type='text' name="surnames">
+			<label>Apellido(s) y Nombre(s)</label>
+			<input id="name" placeholder='Nombre(s)' type='text' name="names">
+		</div>
+		<div class="field">
+			<input id="txtBirthday" placeholder='Fecha de Nacimiento' type='date'>
+			<label>Fecha de Nacimiento</label>
+		</div>
+		<div class='field'>
+			<input id="txtRFC" class="showInfo" placeholder='RFC' type='text' name="rfc">
+			<label>RFC del promotor</label>
+			<div class="btRFC"><button>Generar RFC</button></div>
+		</div>
+		<div class='field'>
+			<input placeholder='Numero de Seguridad Social del IMSS' type='text' name="imss">
+			<label>IMSS</label>
+		</div>
+		<div class="field">
+			<select class="slctSupervisores" name="supervisores">
+				
+			</select>
+			<label>Supervisor</label>
+		</div>
+		<div class="field">
+			<select class="slctFormatos" name="formatos">
+				
+			</select>
+			<label>Formato</label>
+		</div>
+
+		<div class="field galCont">
+			<label class="lblLOGO">Escoger Logo</label><br>
+			<div class="gallery g1">
+				
+			</div>
+		</div>
+		<div class="field galCont">
+			<label class="lblSELLO">Escoger Sello</label><br>
+			<div class="gallery g2">
+				
+			</div>
+		</div><br><br><br><br><br><br>
+
+		<input class="txtLOGO" type="hidden" name="logoSRC">
+		<input class="txtSELLO" type="hidden" name="selloSRC">
+
+		<div class="field">
+			<select class="slctEmpresa" name="empresa">
+				<option>Ninguno</option>
+				<option value="1">Amicus de Mexico S.A. de C.V.</option>
+				<option value="2">Amicus Marketing S.A. de C.V.</option>
+			</select>
+			<label>Empresa</label>
+		</div>
+
+		<div class='field'>
+			<label for='sell'>Generar con sello</label>
+			<input id='sell' type='checkbox' name="sell">
+		</div>
+		<div class='field'>
+			<label for='sell'><a href="permiso.html" target="_blank">Generar Permiso</a></label>
+		</div>
+		<div class='field form-actions'>
+		 	<button>Generar Carta</button>
+		</div>
+	</form>
+	<script src="js/rfc.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var cadenas = $(".slctCadenas");
+			var sucursales = $(".slctSucursales");
+			var puestos = $(".slctPuesto");
+			var supervisores = $(".slctSupervisores");
+			var dirs = $(".slctDir");
+			var formatos = $(".slctFormatos");
+			var txtLOGO = $(".txtLOGO");
+			var txtSELLO = $(".txtSELLO");
+			var lblLOGO = $(".lblLOGO");
+			var lblSELLO = $(".lblSELLO");
+			var data;
+
+			getImages();
+
+			$.getJSON('sucursales/lista.json', function(json) {
+					cadenas.append($("<option />").text("Ninguno"));
+					$.each(json.Cadena, function(index, value) {
+				        $.each(value, function(key, val){
+				        	cadenas.append($("<option />").val(key).text(key));
+				        });
+				    });
+				    puestos.append($("<option />").text("Ninguno"));
+				    $.each(json.Puesto, function(key, value) {
+				    		puestos.append($("<option />").val(value).text(value));
+				    });
+				    sucursales.append($("<option />").text("Ninguno"));
+				    supervisores.append($("<option />").text("Ninguno"));
+				    dirs.append($("<option />").text("Ninguno"));
+				    formatos.append($("<option />").text("Ninguno"));
+				    $.each(json.Supervisor, function(key, value) {
+				    		supervisores.append($("<option />").val(value).text(value));
+				    });
+
+					data = json;
+			})
+			.fail(function(jqxhr, textStatus, error ) {
+			    var err = textStatus + ", " + error;
+    			console.log( "Request Failed: " + err );
+			});
+			
+			cadenas.change(function() {
+				var i = this.options[this.selectedIndex].text;
+				if(i == "Tiendas Comercial Mexicana, S.A. de C.V."){
+					$(".sucName").removeClass('hide');
+					$(".sucName").addClass('show');
+					$("#txtProd").removeClass('hide');
+					$("#txtProd").addClass('show');
+					$("#txtDep").removeClass('hide');
+					$("#txtDep").addClass('show');
+					if(!$(".slctSucursales").hasClass('showInfo')){
+						$(".slctSucursales").addClass('showInfo');
+					}else{
+						$(".slctSucursales").removeClass('showInfo');
+						$(".slctSucursales").addClass('showInfo');
+					}
+				}else if(i == "Comercial City Fresko S. de R.L. de C.V." || i == "Tiendas Europeas" || i == "Supermercados Internacionales heb, S.A. de C.V." || i == "Tiendas Soriana S.A. de C.V." || i == "Nueva Walmart de Mexico, S. de R.L. de C.V."){
+					$(".sucName").removeClass('hide');
+					$(".sucName").addClass('show');
+					if(!$(".slctSucursales").hasClass('showInfo')){
+						$(".slctSucursales").addClass('showInfo');
+					}else{
+						$(".slctSucursales").removeClass('showInfo');
+						$(".slctSucursales").addClass('showInfo');
+					}
+				}else{
+					if($(".sucName").hasClass('show')){
+						$(".sucName").removeClass('show');
+						$(".sucName").addClass('hide');
+					}
+					$("#txtProd").removeClass('show');
+					$("#txtProd").addClass('hide');
+					$("#txtDep").removeClass('show');
+					$("#txtDep").addClass('hide');
+					if($(".slctSucursales").hasClass('showInfo')){
+						$(".slctSucursales").removeClass('showInfo');
+					}
+				}
+
+				if(i == "Tiendas Europeas"){
+					$("#txtNP").removeClass('hide');
+					$("#txtNP").addClass('show');
+				}else{
+					$("#txtNP").removeClass('show');
+					$("#txtNP").addClass('hide');
+				}
+
+				var array = data.Cadena[0];
+				var sucs = array[i][0].Sucursales;
+				sucursales.empty();
+				sucursales.append($("<option />").text("Ninguno"));
+				
+				$.each(sucs[0], function(key, val){
+					sucursales.append($("<option />").val(key).text(key));
+				});
+				
+				formatos.empty();
+				formatos.append($("<option />").text("Ninguno"));
+				var forms = array[i][0].Formatos;
+				if(forms.length > 0 ){
+					$.each(forms, function(key, val){
+						formatos.append($("<option />").val(val + ".php").text(val));
+					});
+				}
+				
+			    
+			    $("form").attr('action', "");
+			    $(".slctDir option:eq(0)").prop('selected', true);
+			    $(".sucName").text("Sucursal");
+			});
+
+			puestos.change(function() {
+				var i =this.options[this.selectedIndex].value;
+				switch(i){
+					case "0":
+						$("#name").attr("placeholder","Nombre del Supervisor(a)");
+					break;
+					case "1":
+						$("#name").attr("placeholder","Nombre de la Demostradora");
+					break;
+					case "2":
+						$("#name").attr("placeholder","Nombre del Promotor(a)");
+					break;
+				}
+			});
+
+			var listDir;
+			sucursales.change(function() {
+				var c = $( ".slctCadenas option:selected" ).text();
+				var i = this.options[this.selectedIndex].text;
+				var array = data.Cadena[0];
+				var sucs = array[c];
+				dirs.empty();
+				dirs.append($("<option />").text("Ninguno"));
+				
+				$.each(sucs[0].Sucursales, function(key, val){
+					
+					listDir = new Array();
+					$.each(val[i], function(i, v){
+						if(c == "Tiendas Comercial Mexicana, S.A. de C.V." ||  c == "Comercial City Fresko S. de R.L. de C.V." || c == "Tiendas Europeas" || c == "Supermercados Internacionales heb, S.A. de C.V." || c == "Tiendas Soriana S.A. de C.V." || c == "Nueva Walmart de Mexico, S. de R.L. de C.V."){
+							listDir[i] = v;
+							sd = v.split('|');
+							dirs.append($("<option />").val(sd[1]).text(sd[1]));
+						}else{
+							dirs.append($("<option />").val(v).text(v));
+						}
+					});
+					
+				});
+				
+			});
+	
+			dirs.change(function() {
+				var c = $( ".slctCadenas option:selected" ).text();
+				if(c == "Tiendas Comercial Mexicana, S.A. de C.V." ||  c == "Comercial City Fresko S. de R.L. de C.V." || c == "Tiendas Europeas" || c == "Supermercados Internacionales heb, S.A. de C.V." || c == "Tiendas Soriana S.A. de C.V." || c == "Nueva Walmart de Mexico, S. de R.L. de C.V."){
+					var i = this.selectedIndex;
+					var sucName =  $(".slctSucursales option:selected").text();
+					if(listDir.length > 0 && this.options[this.selectedIndex].text != "Ninguno"){
+						var sp = listDir[i-1].split('|');
+						var s = sp[0].replace('MEGA', '');
+						s = s.replace('BODEGA', '');
+						s = s.replace("WALMART", '');
+						s = s.replace('-', '');
+						$(".sucName").text(s);
+						if(sp[0].includes('-')){
+							var ns = sp[0].replace('-', '');
+							$(".slctSucursales option:selected").val(ns);  
+						}else{
+							$(".slctSucursales option:selected").val(sucName +" "+s);  
+						}
+					}
+					if(this.options[this.selectedIndex].text == "Ninguno"){
+						$(".sucName").text("Sucursal");
+					}
+				}
+			});
+
+			formatos.change(function() {
+				var url = this.options[this.selectedIndex].value;
+				$("form").attr('action', "formatos/"+url);
+			});
+
+
+			function getImages(){
+				var logos = "img/logos/";
+				var sellos = "img/sellos/";
+				var l = 0;
+				$.ajax({
+				    url : logos,
+				    success: function (data) {
+				        $(data).find("a").attr("href", function (i, val) {
+				            if( val.match(/\.(jpe?g|png)$/) ) { 
+				                $(".g1").append( "<img class='logo-"+l+"' src='"+ logos + val +"' width='300' height='200'/>" );
+				                l++;
+				            } 
+				        });
+				    }
+				});
+				var s = 0;
+				$.ajax({
+				    url : sellos,
+				    success: function (data) {
+				        $(data).find("a").attr("href", function (i, val) {
+				            if( val.match(/\.(jpe?g|png)$/) ) { 
+				                $(".g2").append( "<img class='sello-"+s+"' src='"+ sellos + val +"' width='300' height='200'/>" );
+				                s++;
+				            } 
+				        });
+				    }
+				});
+			}
+
+			$(".g1").on("click", "img", function(){
+				var imgSRC = $(this).attr('src');
+				txtLOGO.val(imgSRC)
+				lblLOGO.text("Logo: "+ imgSRC);
+			});
+
+			$(".g2").on("click", "img", function(){
+				var imgSRC = $(this).attr('src');
+				txtSELLO.val(imgSRC);
+				lblSELLO.text("Sello: " + imgSRC);
+			});
+		});
+	</script>
+</body>
+</html>
